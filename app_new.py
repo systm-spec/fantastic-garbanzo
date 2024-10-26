@@ -6,8 +6,6 @@ from tkinter import filedialog
 import os
 import json
 
-
-
 ###############
 ## App Setup ##
 ###############
@@ -15,7 +13,7 @@ ctk.set_appearance_mode("dark")
 ctk.set_default_color_theme("./config/theme/custom.json")
 app = ctk.CTk()
 app.title("Achim")
-app.geometry("400x720")
+app.geometry("460x720")
 
 parent_frame = ctk.CTkFrame(app, fg_color=None)
 parent_frame.pack(expand=True, fill="both")
@@ -47,46 +45,68 @@ def open_cl():
         # save list to json
         create_save_json(users, file_name)
 
-# render fn
+
+# Funktion zum Rendern der Benutzerliste
 def render_classlist_users(users):
-    # counter for grid
+    # Zähler für die Position in der grid
     row_counter = 0
     col_counter = 0
-    # create & render btn with row_ & col_ counter for auto_grid
+
+    # Button für jeden Benutzer erstellen und mit grid-Zählern platzieren
     for user in users:
-        # we call the LAMBDA into command to get the user as arg
-        user_btn = ctk.CTkButton(frame_users,width=24, text=user, corner_radius=14, command=lambda u=user:on_user_click(u))
-        user_btn.grid(column=col_counter, row=row_counter, pady=(5,0))
+        # Lambda-Ausdruck in 'command', um 'user' als Argument an 'on_user_click' zu übergeben
+        user_btn = ctk.CTkButton(
+            frame_users,
+            width=24,
+            text=user,
+            corner_radius=14,
+            command=lambda u=user: on_user_click(u)
+        )
+
+        # Button in grid an der durch Zähler bestimmten Position platzieren
+        user_btn.grid(column=col_counter, row=row_counter, pady=(5, 0))
+
+        # Spalten-Zähler erhöhen bis max. 2, danach Zeilen-Zähler erhöhen
         if col_counter < 2:
             col_counter += 1
         else:
             row_counter += 1
-            col_counter = 0
+            col_counter = 0  # Zurücksetzen des Spalten-Zählers
 
 
+# Funktion zum Erstellen und Speichern einer JSON-Datei aus einer Liste
 def create_save_json(liste, title):
-    # convert list to dict
-    cool_list = {title:{}}
-    for i,elem in enumerate(liste):
+    # Liste in ein Dictionary umwandeln mit Titel als Schlüssel
+    cool_list = {title: {}}
+
+    # Schleife, um jedes Element der Liste mit ID und Details in das Dictionary zu packen
+    for i, elem in enumerate(liste):
         cool_list[title][elem] = {
-            "id":i,
-            "name":elem,
-            "score": 0
+            "id": i,
+            "name": elem,
+            "score": 0  # Startscore für jeden Benutzer festlegen
         }
-    current_classlist['title']=title
+
+    # Klassenliste im globalen Dictionary speichern
+    current_classlist['title'] = title
     current_classlist_dict.update(cool_list)
-    # dump it & save as json in config/user_data
+
+    # JSON-Datei mit den Benutzerdaten in 'config/user_data/' speichern
     with open(f"config/user_data/{title}.json", "w") as f:
         json.dump(cool_list, f)
 
+
+# Funktion, die bei Klick auf einen Benutzer-Button ausgeführt wird
 def on_user_click(current_user):
+    # Zugriff auf den Benutzer im aktuellen Klassenlisten-Dictionary
     user = current_classlist_dict[current_classlist['title']]
     user_score = user[current_user]["score"]
-    user[current_user].update({ "score": user_score + 10})
-    print(user[current_user]["score"])
 
+    # Erhöhen des Scores für den angeklickten Benutzer um 10
+    user[current_user].update({"score": user_score + 10})
 
-
+    # Aktuellen Benutzerstatus in der Konsole ausgeben (zur Kontrolle)
+    print(user[current_user])
 
 
 
