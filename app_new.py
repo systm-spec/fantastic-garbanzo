@@ -4,6 +4,7 @@ from customtkinter import CTkToplevel
 import tkinter as tk
 from tkinter import filedialog
 import os
+import json
 
 
 
@@ -21,29 +22,72 @@ parent_frame.pack(expand=True, fill="both")
 parent_frame.grid_columnconfigure(0, weight=1)
 
 
+current_classlist= {"title":""}
+current_classlist_dict = {}
+
 ###############
 ## Functions ##
 ###############
+
+# Dialogue: for opening classlist
 def open_cl():
     label.cl_path = filedialog.askopenfilename(defaultextension=".txt",title="Open classlist", initialdir=r"./assets/classlists")
     if label.cl_path:
-        stripped_path = label.cl_path.split("/")[-1].split(".")[0]
-        label.configure(text=stripped_path if stripped_path else "no file selected")
-        render_classlist_users(label.cl_path)
+        # if cl_path exists strip filename for label
+        file_name = label.cl_path.split("/")[-1].split(".")[0]
 
-def render_classlist_users(cl_path):
+        label.configure(text=file_name if file_name else "no file selected")
+        # then start open & render process with cl_path
+        with open(label.cl_path, "r") as reader:
+            # open & remove linebreaks ("\n") & save to list
+            users = reader.read().split('\n')
+        users.sort()
+        # init render
+        render_classlist_users(users)
+        # save list to json
+        create_save_json(users, file_name)
+
+# render fn
+def render_classlist_users(users):
+    # counter for grid
     row_counter = 0
     col_counter = 0
-    with open(cl_path, "r") as reader:
-        users = reader.read().split('\n')
+    # create & render btn with row_ & col_ counter for auto_grid
     for user in users:
-        user_btn = ctk.CTkButton(frame_users,width=24, text=user, corner_radius=14)
+        # we call the LAMBDA into command to get the user as arg
+        user_btn = ctk.CTkButton(frame_users,width=24, text=user, corner_radius=14, command=lambda u=user:on_user_click(u))
         user_btn.grid(column=col_counter, row=row_counter, pady=(5,0))
-        if col_counter > 1:
+        if col_counter < 2:
+            col_counter += 1
+        else:
             row_counter += 1
             col_counter = 0
-        else:
-            col_counter += 1
+
+
+def create_save_json(liste, title):
+    # convert list to dict
+    cool_list = {title:{}}
+    for i,elem in enumerate(liste):
+        cool_list[title][elem] = {
+            "id":i,
+            "name":elem,
+            "score": 0
+        }
+    current_classlist['title']=title
+    current_classlist_dict.update(cool_list)
+    # dump it & save as json in config/user_data
+    with open(f"config/user_data/{title}.json", "w") as f:
+        json.dump(cool_list, f)
+
+def on_user_click(current_user):
+    user = current_classlist_dict[current_classlist['title']]
+    user_score = user[current_user]["score"]
+    user[current_user].update({ "score": user_score + 10})
+    print(user[current_user]["score"])
+
+
+
+
 
 
 #####################
