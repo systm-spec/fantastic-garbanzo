@@ -52,11 +52,12 @@ def open_cl():
 
 # render fn
 def render_classlist_users(users):
+    # counter for grid
     row_counter = 0
     col_counter = 0
     # create & render btn with row_ & col_ counter for auto_grid
     for user in users:
-        user_btn = ctk.CTkButton(frame_users,width=24, text=user, corner_radius=14)
+        user_btn = ctk.CTkButton(frame_users,width=24, text=user, corner_radius=14, command=lambda u=user:on_user_click(u))
         user_btn.grid(column=col_counter, row=row_counter, pady=(5,0))
         if col_counter < 2:
             col_counter += 1
@@ -71,14 +72,15 @@ def create_save_json(liste, title):
     for i,elem in enumerate(liste):
         cool_list[title].append({
             "id":i,
-            "name":elem,
+            "name":str(elem),
             "score": 0
         })
-    print(cool_list)
     # dump it & save as json in config/user_data
-    with open(f"config/user_data/{title}.json", "w") as writer:
-        json.dump(cool_list, writer)
+    with open(f"config/user_data/{title}.json", "w") as f:
+        json.dump(cool_list, f)
 
+def on_user_click(user):
+    print(user)
 
 #####################
 ## Classlist-Frame ##
