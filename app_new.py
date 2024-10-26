@@ -21,17 +21,13 @@ parent_frame = ctk.CTkFrame(app, fg_color=None)
 parent_frame.pack(expand=True, fill="both")
 parent_frame.grid_columnconfigure(0, weight=1)
 
-###############
-## VARIABLES ##
-###############
 
-
+current_classlist= {"title":""}
+current_classlist_dict = {}
 
 ###############
 ## Functions ##
 ###############
-
-
 
 # Dialogue: for opening classlist
 def open_cl():
@@ -39,6 +35,7 @@ def open_cl():
     if label.cl_path:
         # if cl_path exists strip filename for label
         file_name = label.cl_path.split("/")[-1].split(".")[0]
+
         label.configure(text=file_name if file_name else "no file selected")
         # then start open & render process with cl_path
         with open(label.cl_path, "r") as reader:
@@ -57,6 +54,7 @@ def render_classlist_users(users):
     col_counter = 0
     # create & render btn with row_ & col_ counter for auto_grid
     for user in users:
+        # we call the LAMBDA into command to get the user as arg
         user_btn = ctk.CTkButton(frame_users,width=24, text=user, corner_radius=14, command=lambda u=user:on_user_click(u))
         user_btn.grid(column=col_counter, row=row_counter, pady=(5,0))
         if col_counter < 2:
@@ -68,19 +66,29 @@ def render_classlist_users(users):
 
 def create_save_json(liste, title):
     # convert list to dict
-    cool_list = {title:[]}
+    cool_list = {title:{}}
     for i,elem in enumerate(liste):
-        cool_list[title].append({
+        cool_list[title][elem] = {
             "id":i,
-            "name":str(elem),
+            "name":elem,
             "score": 0
-        })
+        }
+    current_classlist['title']=title
+    current_classlist_dict.update(cool_list)
     # dump it & save as json in config/user_data
     with open(f"config/user_data/{title}.json", "w") as f:
         json.dump(cool_list, f)
 
-def on_user_click(user):
-    print(user)
+def on_user_click(current_user):
+    user = current_classlist_dict[current_classlist['title']]
+    user_score = user[current_user]["score"]
+    user[current_user].update({ "score": user_score + 10})
+    print(user[current_user]["score"])
+
+
+
+
+
 
 #####################
 ## Classlist-Frame ##
