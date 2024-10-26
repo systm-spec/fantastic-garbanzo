@@ -25,7 +25,7 @@ parent_frame.grid_columnconfigure(0, weight=1)
 ## VARIABLES ##
 ###############
 
-# users_dict = {}
+
 
 ###############
 ## Functions ##
@@ -38,28 +38,22 @@ def open_cl():
     label.cl_path = filedialog.askopenfilename(defaultextension=".txt",title="Open classlist", initialdir=r"./assets/classlists")
     if label.cl_path:
         # if cl_path exists strip filename for label
-        stripped_path = label.cl_path.split("/")[-1].split(".")[0]
-        label.configure(text=stripped_path if stripped_path else "no file selected")
+        file_name = label.cl_path.split("/")[-1].split(".")[0]
+        label.configure(text=file_name if file_name else "no file selected")
         # then start open & render process with cl_path
-        render_classlist_users(label.cl_path)
+        with open(label.cl_path, "r") as reader:
+            # open & remove linebreaks ("\n") & save to list
+            users = reader.read().split('\n')
+        users.sort()
+        # init render
+        render_classlist_users(users)
+        # save list to json
+        create_save_json(users, file_name)
 
 # render fn
-def render_classlist_users(cl_path):
+def render_classlist_users(users):
     row_counter = 0
     col_counter = 0
-    # open cl_path
-    # remove linebreaks ("\n") & save to list
-    with open(cl_path, "r") as reader:
-        users = reader.read().split('\n')
-    users.sort()
-
-    # convert list to dict
-    # dump it & save as json in config/user_data
-    with open("config/user_data/user_data_test.json", "w") as writer:
-        users_dict = dict(zip(range(len(users)), users))
-        users_dict.update()
-        json.dump(users_dict, writer)
-
     # create & render btn with row_ & col_ counter for auto_grid
     for user in users:
         user_btn = ctk.CTkButton(frame_users,width=24, text=user, corner_radius=14)
@@ -69,6 +63,22 @@ def render_classlist_users(cl_path):
         else:
             row_counter += 1
             col_counter = 0
+
+
+def create_save_json(liste, title):
+    # convert list to dict
+    cool_list = {title:[]}
+    for i,elem in enumerate(liste):
+        cool_list[title].append({
+            "id":i,
+            "name":elem,
+            "score": 0
+        })
+    print(cool_list)
+    # dump it & save as json in config/user_data
+    with open(f"config/user_data/{title}.json", "w") as writer:
+        json.dump(cool_list, writer)
+
 
 #####################
 ## Classlist-Frame ##
