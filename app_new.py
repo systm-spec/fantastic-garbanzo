@@ -25,7 +25,7 @@ parent_frame.grid_columnconfigure(0, weight=1)
 ## VARIABLES ##
 ###############
 
-users_dict = {}
+# users_dict = {}
 
 ###############
 ## Functions ##
@@ -52,6 +52,13 @@ def render_classlist_users(cl_path):
     with open(cl_path, "r") as reader:
         users = reader.read().split('\n')
     users.sort()
+
+    # convert list to dict
+    # dump it & save as json in config/user_data
+    with open("config/user_data/user_data_test.json", "w") as writer:
+        users_dict = dict(zip(range(len(users)), users))
+        users_dict.update()
+        json.dump(users_dict, writer)
 
     # create & render btn with row_ & col_ counter for auto_grid
     for user in users:
