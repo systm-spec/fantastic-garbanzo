@@ -87,7 +87,8 @@ radiobutton_1 = ctk.CTkRadioButton(root, text="CTkRadioButton 1",
                                              command=radiobutton_event, variable= radio_var, value=1)
 radiobutton_2 = ctk.CTkRadioButton(root, text="CTkRadioButton 2",
                                              command=radiobutton_event, variable= radio_var, value=2)
-
+radiobutton_1.grid()
+radiobutton_2.grid()
 # Scrollable_Frame
 # 2 BSP in Doku SUPER INTERESSTING
 scrollable_frame = ctk.CTkScrollableFrame(root, width=200, height=200)
