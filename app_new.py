@@ -5,6 +5,7 @@ import tkinter as tk
 from tkinter import filedialog
 import os
 import json
+from event_info import ei
 
 ###############
 ## App Setup ##
@@ -51,7 +52,6 @@ def render_classlist_users(users):
     # Zähler für die Position in der grid
     row_counter = 0
     col_counter = 0
-
     # Button für jeden Benutzer erstellen und mit grid-Zählern platzieren
     for user in users:
         # Lambda-Ausdruck in 'command', um 'user' als Argument an 'on_user_click' zu übergeben
@@ -127,14 +127,10 @@ open_icon = ctk.CTkImage(dark_image=Image.open("./assets/img/open_icon.png"), si
 open_btn = ctk.CTkButton(frame, text="", command=open_cl, image=open_icon, corner_radius=4, width=15)
 open_btn.grid(row=0, column=1, ipadx=3, padx=(0,4), pady=(4,0) )
 
-
 # Main-Frame for classlist-users
 frame_users = ctk.CTkFrame(parent_frame, fg_color=None)
 frame_users.grid(row=1, column=0, padx=7, ipady=3, sticky="ew")
 frame_users.grid_columnconfigure((0,1,2), weight=1)
-
-
-
 
 
 
