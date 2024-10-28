@@ -4,6 +4,7 @@ import os
 import json
 from util.windows import check_for_windows
 from util.event_info import info_me
+from PIL import Image
 
 check_for_windows()
 
@@ -198,6 +199,14 @@ users_tab = class_user_grid_tab.add("users")
 lists_tab = class_user_grid_tab.add("lists")
 class_user_grid_tab.set("lists")
 class_user_grid_tab.grid(padx=7, pady=7, sticky="NWE")
+
+# #add_classlist button
+# add_icon= ctk.CTkImage(dark_image= Image.open('./assets/img/add_icon.png'),size=(20,20))
+# frame= ctk.CTkFrame(master= app)
+# add_button= ctk.CTkButton(master= frame,text='',image= add_icon, width=65, height=32)
+# frame.grid()
+# add_button.grid()
+
 
 # scrollable frame for classlist jsons
 classlist_scroll_frame = ctk.CTkScrollableFrame(lists_tab)
