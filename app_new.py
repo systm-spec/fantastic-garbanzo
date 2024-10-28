@@ -20,8 +20,6 @@ parent_frame = ctk.CTkFrame(app, fg_color=None)
 parent_frame.pack(expand=True, fill="both")
 parent_frame.grid_columnconfigure(0, weight=1)
 
-
-
 current_classlist= {"title":""}
 current_classlist_dict = {}
 
@@ -131,19 +129,6 @@ def render_json_classlists():
 #####################
 ## Classlist-Frame ##
 #####################
-# Main-Frame for classlist-controls
-# frame = ctk.CTkFrame(parent_frame, fg_color=None, height=50)
-# frame.grid(row=0, column=0, padx=7, pady=7, sticky="ewn")
-# frame.grid_columnconfigure(0, weight=1)
-
-## Label to display current classlist
-#label = ctk.CTkLabel(frame, text="no file selected",  corner_radius=4 )
-#label.grid(row=0, column= 0, padx=4,pady=(4,0), ipadx=2, sticky="WE")
-#
-## Btn to load classlist
-#open_icon = ctk.CTkImage(dark_image=Image.open("./assets/img/open_icon.png"), size=(14,14))
-#open_btn = ctk.CTkButton(frame, text="", command=open_cl, image=open_icon, corner_radius=4, width=15)
-#open_btn.grid(row=0, column=1, ipadx=3, padx=(0,4), pady=(4,0) )
 
 # Main-Frame for classlist-users
 frame_users = ctk.CTkFrame(parent_frame, fg_color=None)
