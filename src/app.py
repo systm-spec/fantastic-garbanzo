@@ -1,11 +1,11 @@
 import customtkinter as ctk
-from PIL import Image
-from customtkinter import CTkToplevel
-import tkinter as tk
 from tkinter import filedialog
 import os
 import json
-from event_info import ei
+from util.windows import check_for_windows
+from util.event_info import info_me
+
+check_for_windows()
 
 ###############
 ## App Setup ##
