@@ -16,9 +16,9 @@ app = ctk.CTk()
 app.title("Lurk.Alert()")
 app.geometry("620x720")
 
-parent_frame = ctk.CTkFrame(app, fg_color=None)
-parent_frame.pack(expand=True, fill="both")
-parent_frame.grid_columnconfigure(0, weight=1)
+class_user_grid_frame = ctk.CTkFrame(app)
+class_user_grid_frame.pack(fill="both")
+class_user_grid_frame.grid_columnconfigure(0, weight=1)
 
 current_classlist= {"title":""}
 current_classlist_dict = {}
@@ -26,24 +26,6 @@ current_classlist_dict = {}
 ###############
 ## Functions ##
 ###############
-
-# Dialogue: for opening classlist
-def open_cl():
-    label.cl_path = filedialog.askopenfilename(defaultextension=".txt",title="Open classlist", initialdir=r"./assets/classlists")
-    if label.cl_path:
-        # if cl_path exists strip filename for label
-        file_name = label.cl_path.split("/")[-1].split(".")[0]
-        label.configure(text=file_name if file_name else "no file selected")
-        # then start open & render process with cl_path
-        with open(label.cl_path, "r") as reader:
-            # open & remove linebreaks ("\n") & save to list
-            users = reader.read().split('\n')
-        users.sort()
-        # init render
-        render_classlist_users(users)
-        # save list to json
-        create_save_json(users, file_name)
-
 
 # Funktion zum Rendern der Benutzerliste
 def render_classlist_users(users):
@@ -71,8 +53,7 @@ def render_classlist_users(users):
         else:
             row_counter += 1
             col_counter = 0  # Zurücksetzen des Spalten-Zählers
-    tab_users_frame.configure(width = 500)
-
+    tab_users_frame.configure(fg_color="gray17")
 
 # Funktion zum Erstellen und Speichern einer JSON-Datei aus einer Liste
 def create_save_json(liste, title):
@@ -95,7 +76,6 @@ def create_save_json(liste, title):
     with open(f"config/user_data/{title}.json", "w") as f:
         json.dump(cool_list, f)
 
-
 # Funktion, die bei Klick auf einen Benutzer-Button ausgeführt wird
 def on_user_click(current_user):
     # Zugriff auf den Benutzer im aktuellen Klassenlisten-Dictionary
@@ -108,6 +88,11 @@ def on_user_click(current_user):
     # Aktuellen Benutzerstatus in der Konsole ausgeben (zur Kontrolle)
     print(user[current_user])
 
+
+# todo:
+#  - DOCSTRINGS
+#  - Comments
+
 def on_classlist_click(cl_name):
     with open (rf"config/user_data/{cl_name}", "r", encoding='UTF-8') as reader:
         names = reader.read()
@@ -116,7 +101,7 @@ def on_classlist_click(cl_name):
     current_classlist['title'] = cl_name.split(".")[0]
     current_classlist_dict.update(names_dict)
     render_classlist_users(names_dict_keys)
-    class_tab.set("users")
+    class_user_grid_tab.set("users")
 
 def render_json_classlists():
     path= "config/user_data"
@@ -126,32 +111,31 @@ def render_json_classlists():
 
 
 
-#####################
-## Classlist-Frame ##
-#####################
+#################################
+## Classlist & User-Grid Frame ##
+#################################
 
-# Main-Frame for classlist-users
-frame_users = ctk.CTkFrame(parent_frame, fg_color=None)
-frame_users.grid(row=1, column=0, padx=7, ipady=3, sticky="ew")
-frame_users.grid_columnconfigure((0,1,2), weight=1)
-
-# Classlist-Tab
-class_tab = ctk.CTkTabview(parent_frame)
-tab_users = class_tab.add("users")
-tab_lists = class_tab.add("lists")
-class_tab.set("lists")
-class_tab.grid(sticky="ewn",padx=7, pady=7,row=0, column=0)
+# Classlist- & User-Grid-Tab
+class_user_grid_tab = ctk.CTkTabview(class_user_grid_frame)
+tab_users = class_user_grid_tab.add("users")
+tab_lists = class_user_grid_tab.add("lists")
+class_user_grid_tab.set("lists")
+class_user_grid_tab.grid(padx=7, pady=7, sticky="NWE")
 
 # scrollable frame for classlist jsons
 scroll_classlists_frame = ctk.CTkScrollableFrame(tab_lists)
-tab_lists.grid_columnconfigure((0,1), weight=1)
-scroll_classlists_frame.grid(column=2, pady=12, padx=8)
+tab_lists.grid_columnconfigure(0, weight=1)
+scroll_classlists_frame.grid(column=1, pady=12, padx=8)
 
 # parent frame for class-members
-tab_users_frame = ctk.CTkFrame(tab_users)
+tab_users_frame = ctk.CTkFrame(tab_users, fg_color="transparent")
 tab_users_frame.grid_columnconfigure((0,1,2), weight=1, minsize=200)
 tab_users_frame.grid()
 
+
+#################################
+## Cxxx ##
+#################################
 
 for item in render_json_classlists():
     user_btn = ctk.CTkButton(
