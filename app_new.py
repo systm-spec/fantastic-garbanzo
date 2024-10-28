@@ -21,6 +21,7 @@ parent_frame.pack(expand=True, fill="both")
 parent_frame.grid_columnconfigure(0, weight=1)
 
 
+
 current_classlist= {"title":""}
 current_classlist_dict = {}
 
@@ -149,7 +150,6 @@ frame_users = ctk.CTkFrame(parent_frame, fg_color=None)
 frame_users.grid(row=1, column=0, padx=7, ipady=3, sticky="ew")
 frame_users.grid_columnconfigure((0,1,2), weight=1)
 
-
 # Classlist-Tab
 class_tab = ctk.CTkTabview(parent_frame)
 tab_users = class_tab.add("users")
@@ -166,7 +166,6 @@ scroll_classlists_frame.grid(column=2, pady=12, padx=8)
 tab_users_frame = ctk.CTkFrame(tab_users)
 tab_users_frame.grid_columnconfigure((0,1,2), weight=1, minsize=200)
 tab_users_frame.grid()
-
 
 
 for item in render_json_classlists():

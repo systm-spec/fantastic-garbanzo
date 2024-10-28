@@ -138,15 +138,23 @@ tab_button1.pack(padx=20, pady=20)
 tab_button2 = ctk.CTkButton(master=tabview.tab("tab 2"))
 tab_button2.pack(padx=20, pady=20)
 
+# segmented btn
+def segmented_button_callback(value):
+    print("segmented button clicked:", value)
+
+segemented_button = ctk.CTkSegmentedButton(root, values=["Value 1", "Value 2", "Value 3"],
+                                                     command=segmented_button_callback)
+segemented_button.set("Value 1")
+segemented_button.grid()
 
 # Textbox
-textbox = ctk.CTkTextbox(root)
+# textbox = ctk.CTkTextbox(root)
+#
+# textbox.insert("0.0", "new text to insert")  # insert at line 0 character 0
+# text = textbox.get("0.0", "end")  # get text from line 0 character 0 till the end
+# textbox.delete("0.0", "end")  # delete all text
+# textbox.configure(state="normal")  # configure textbox to be read-only
 
-textbox.insert("0.0", "new text to insert")  # insert at line 0 character 0
-text = textbox.get("0.0", "end")  # get text from line 0 character 0 till the end
-textbox.delete("0.0", "end")  # delete all text
-textbox.configure(state="normal")  # configure textbox to be read-only
-
-textbox.grid()
+# textbox.grid()
 
 root.mainloop()
