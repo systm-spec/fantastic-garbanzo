@@ -29,12 +29,6 @@ current_classlist_dict = {}
 ###############
 
 # Init-Fn zum rendern der user in btns
-
-
-# todo:
-#  - DOCSTRINGS
-#  - Comments
-
 def init():
     """
     Initializes the user interface with class list buttons.
@@ -192,9 +186,6 @@ def render_json_classlists():
     # Sortiert die Klassendateien in umgekehrter alphabetischer Reihenfolge
     json_classlists.sort(reverse=True)
     return json_classlists  # Gibt die sortierte Liste der Klassendateien zurück
-
-
-
 
 
 #################################
