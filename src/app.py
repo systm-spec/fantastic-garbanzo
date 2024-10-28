@@ -16,10 +16,11 @@ app = ctk.CTk()
 app.title("Lurk.Alert()")
 app.geometry("620x720")
 
-parent_frame = ctk.CTkFrame(app, fg_color=None)
-parent_frame.pack(expand=True, fill="both")
-parent_frame.grid_columnconfigure(0, weight=1)
+class_user_grid_frame = ctk.CTkFrame(app)
+class_user_grid_frame.pack(fill="both")
+class_user_grid_frame.grid_columnconfigure(0, weight=1)
 
+# semi-globals
 current_classlist= {"title":""}
 current_classlist_dict = {}
 
@@ -27,26 +28,41 @@ current_classlist_dict = {}
 ## Functions ##
 ###############
 
-# Dialogue: for opening classlist
-def open_cl():
-    label.cl_path = filedialog.askopenfilename(defaultextension=".txt",title="Open classlist", initialdir=r"./assets/classlists")
-    if label.cl_path:
-        # if cl_path exists strip filename for label
-        file_name = label.cl_path.split("/")[-1].split(".")[0]
-        label.configure(text=file_name if file_name else "no file selected")
-        # then start open & render process with cl_path
-        with open(label.cl_path, "r") as reader:
-            # open & remove linebreaks ("\n") & save to list
-            users = reader.read().split('\n')
-        users.sort()
-        # init render
-        render_classlist_users(users)
-        # save list to json
-        create_save_json(users, file_name)
+# Init-Fn zum rendern der user in btns
+def init():
+    """
+    Initializes the user interface with class list buttons.
 
+    This function creates a button for each class list file in the directory,
+    adds it to the scroll frame in the UI, and assigns a command that triggers
+    when the button is clicked to load the corresponding class list.
+    """
+    # Iteriert durch alle gefundenen Klassendateien und erstellt Buttons dafür
+    for item in render_json_classlists():
+        user_btn = ctk.CTkButton(
+            classlist_scroll_frame,
+            width=32,  # Breite des Buttons
+            text=item,  # Text des Buttons ist der Name der Klassendatei
+            corner_radius=12,  # Abgerundete Ecken für ein besseres UI-Design
+            fg_color="transparent",  # Hintergrundfarbe des Buttons
+            # Weisst jedem Button eine Funktion zu, die beim Klick die Klasse lädt
+            command=lambda cl_name=item: on_classlist_click(cl_name)
+        )
+        # Platziert den Button im Scroll-Frame der Benutzeroberfläche
+        user_btn.grid(sticky="ew")
 
 # Funktion zum Rendern der Benutzerliste
 def render_classlist_users(users):
+    """
+    Displays each user from the given list in a grid layout within the UI.
+
+    Parameters:
+    users (list): List of user names to be displayed as buttons.
+
+    This function iterates through the list of users, creates a button for each,
+    and places it in a grid layout with up to three columns. Clicking a button
+    calls the 'on_user_click' function with the user's name as the argument.
+    """
     # Zähler für die Position in der grid
     row_counter = 0
     col_counter = 0
@@ -71,105 +87,135 @@ def render_classlist_users(users):
         else:
             row_counter += 1
             col_counter = 0  # Zurücksetzen des Spalten-Zählers
-    tab_users_frame.configure(width = 500)
-
+    tab_users_frame.configure(fg_color="gray17")
 
 # Funktion zum Erstellen und Speichern einer JSON-Datei aus einer Liste
-def create_save_json(liste, title):
-    # Liste in ein Dictionary umwandeln mit Titel als Schlüssel
-    cool_list = {title: {}}
+def create_save_json(user_list, title):
+    """
+    Creates a JSON file from a list of user names and saves it with a given title.
 
-    # Schleife, um jedes Element der Liste mit ID und Details in das Dictionary zu packen
-    for i, elem in enumerate(liste):
-        cool_list[title][elem] = {
+    Parameters:
+    user_list (list): List of user names to be stored in the JSON file.
+    title (str): Title used as the JSON filename and as the main key in the data.
+
+    This function takes a list of user names, assigns each an ID and initial score,
+    and then saves the data as a JSON file. It also updates global class list data.
+    """
+    # Erstellt ein Dictionary mit dem Titel als Schlüssel für die JSON-Datei
+    class_list_data = {title: {}}
+
+    # Fügt jedem Benutzer in der Liste eine ID und einen Start-Score hinzu
+    for i, elem in enumerate(user_list):
+        class_list_data[title][elem] = {
             "id": i,
             "name": elem,
             "score": 0  # Startscore für jeden Benutzer festlegen
         }
 
-    # Klassenliste im globalen Dictionary speichern
+    # Aktuelle Klassenliste und Benutzer-Daten aktualisieren
     current_classlist['title'] = title
-    current_classlist_dict.update(cool_list)
+    current_classlist_dict.update(class_list_data)
 
-    # JSON-Datei mit den Benutzerdaten in 'config/user_data/' speichern
+    # Speichert die Benutzerdaten in einer JSON-Datei im Ordner "config/user_data"
     with open(f"config/user_data/{title}.json", "w") as f:
-        json.dump(cool_list, f)
-
+        json.dump(class_list_data, f)
 
 # Funktion, die bei Klick auf einen Benutzer-Button ausgeführt wird
 def on_user_click(current_user):
-    # Zugriff auf den Benutzer im aktuellen Klassenlisten-Dictionary
+    """
+    Increases the score for a clicked user and displays the updated score in the console.
+
+    Parameters:
+    current_user (str): The name of the user whose score will be incremented.
+
+    This function locates the clicked user in the global class list dictionary,
+    increments their score by 10, and prints the updated user data to the console.
+    """
+    # Benutzerinformationen aus dem aktuellen Klassenlisten-Dictionary abrufen
     user = current_classlist_dict[current_classlist['title']]
     user_score = user[current_user]["score"]
 
-    # Erhöhen des Scores für den angeklickten Benutzer um 10
+    # Erhöht den Score des angeklickten Benutzers um 10 Punkte
     user[current_user].update({"score": user_score + 10})
 
-    # Aktuellen Benutzerstatus in der Konsole ausgeben (zur Kontrolle)
+    # Gibt den aktualisierten Benutzerstatus in der Konsole aus (zur Kontrolle)
     print(user[current_user])
 
 def on_classlist_click(cl_name):
-    with open (rf"config/user_data/{cl_name}", "r", encoding='UTF-8') as reader:
-        names = reader.read()
+    """
+        Handles the event when a class list button is clicked.
+
+        Parameters:
+        cl_name (str): The name of the class list file that was clicked.
+
+        This function opens the specified class list JSON file, reads its content,
+        and updates the application's current class list data. It then renders the
+        list of users from that class in the user interface.
+        """
+    # Öffnet die JSON-Datei der angeklickten Klasse im Lesemodus
+    with open(rf"config/user_data/{cl_name}", "r", encoding='UTF-8') as reader:
+        names = reader.read()  # Liest den Inhalt der Datei
+    # Konvertiert den gelesenen JSON-String in ein Python-Dictionary
     names_dict = json.loads(names)
+    # Holt die Schlüssel (Namen) der Benutzer in der Klasse
     names_dict_keys = names_dict[cl_name.split(".")[0]].keys()
+    # Setzt den Titel der aktuellen Klassenliste auf den Dateinamen ohne Endung
     current_classlist['title'] = cl_name.split(".")[0]
+    # Aktualisiert das globale Dictionary für die aktuelle Klassenliste
     current_classlist_dict.update(names_dict)
+    # Zeigt die Benutzernamen der Klassenliste in der Benutzeroberfläche an
     render_classlist_users(names_dict_keys)
-    class_tab.set("users")
+    # Wechselt zur Benutzeransicht im Interface
+    class_user_grid_tab.set("users")
 
 def render_json_classlists():
-    path= "config/user_data"
-    json_classlists=os.listdir(path)
+    """
+    Retrieves and sorts the list of JSON files in the class list directory.
+
+    Returns:
+    list: A sorted list of JSON file names representing different class lists.
+
+    This function looks in the 'config/user_data' folder, finds all JSON files
+    representing class lists, sorts them in reverse alphabetical order, and
+    returns this list.
+    """
+    # Pfad zum Ordner mit den Klassendateien
+    path = "config/user_data"
+    # Holt alle Dateien im Ordner und filtert nur JSON-Klassendateien
+    json_classlists = os.listdir(path)
+    # Sortiert die Klassendateien in umgekehrter alphabetischer Reihenfolge
     json_classlists.sort(reverse=True)
-    return json_classlists
+    return json_classlists  # Gibt die sortierte Liste der Klassendateien zurück
 
 
+#################################
+## Classlist & User-Grid Frame ##
+#################################
 
-#####################
-## Classlist-Frame ##
-#####################
-
-# Main-Frame for classlist-users
-frame_users = ctk.CTkFrame(parent_frame, fg_color=None)
-frame_users.grid(row=1, column=0, padx=7, ipady=3, sticky="ew")
-frame_users.grid_columnconfigure((0,1,2), weight=1)
-
-# Classlist-Tab
-class_tab = ctk.CTkTabview(parent_frame)
-tab_users = class_tab.add("users")
-tab_lists = class_tab.add("lists")
-class_tab.set("lists")
-class_tab.grid(sticky="ewn",padx=7, pady=7,row=0, column=0)
+# Classlist- & User-Grid-Tab
+class_user_grid_tab = ctk.CTkTabview(class_user_grid_frame)
+users_tab = class_user_grid_tab.add("users")
+lists_tab = class_user_grid_tab.add("lists")
+class_user_grid_tab.set("lists")
+class_user_grid_tab.grid(padx=7, pady=7, sticky="NWE")
 
 # scrollable frame for classlist jsons
-scroll_classlists_frame = ctk.CTkScrollableFrame(tab_lists)
-tab_lists.grid_columnconfigure((0,1), weight=1)
-scroll_classlists_frame.grid(column=2, pady=12, padx=8)
+classlist_scroll_frame = ctk.CTkScrollableFrame(lists_tab)
+lists_tab.grid_columnconfigure(0, weight=1)
+classlist_scroll_frame.grid(column=1, pady=12, padx=8)
 
 # parent frame for class-members
-tab_users_frame = ctk.CTkFrame(tab_users)
+tab_users_frame = ctk.CTkFrame(users_tab, fg_color="transparent")
 tab_users_frame.grid_columnconfigure((0,1,2), weight=1, minsize=200)
 tab_users_frame.grid()
 
 
-for item in render_json_classlists():
-    user_btn = ctk.CTkButton(
-        scroll_classlists_frame,
-        width=32,
-        text=item,
-        corner_radius=12,
-        fg_color="transparent",
-        command=lambda cl_name=item:on_classlist_click(cl_name)
-    )
-    user_btn.grid(sticky="ew")
 
 
 
 
 
 
-
-
+init()
 ## YOUR ARE NOT SUPPOSED TO WRITE CODE BELOW THIS LINE! ##
 app.mainloop()
