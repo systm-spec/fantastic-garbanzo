@@ -1,28 +1,12 @@
 import customtkinter as ctk
-from tkinter import filedialog
+from tkinter import messagebox
 import os
 import json
 from util.windows import check_for_windows
 from util.event_info import info_me
+import datetime
 
 check_for_windows()
-
-###############
-## App Setup ##
-###############
-ctk.set_appearance_mode("dark")
-ctk.set_default_color_theme("./config/theme/custom.json")
-app = ctk.CTk()
-app.title("Lurk.Alert()")
-app.geometry("620x720")
-
-class_user_grid_frame = ctk.CTkFrame(app)
-class_user_grid_frame.pack(fill="both")
-class_user_grid_frame.grid_columnconfigure(0, weight=1)
-
-# semi-globals
-current_classlist= {"title":""}
-current_classlist_dict = {}
 
 ###############
 ## Functions ##
@@ -120,27 +104,6 @@ def create_save_json(user_list, title):
     with open(f"config/user_data/{title}.json", "w") as f:
         json.dump(class_list_data, f)
 
-# Funktion, die bei Klick auf einen Benutzer-Button ausgeführt wird
-def on_user_click(current_user):
-    """
-    Increases the score for a clicked user and displays the updated score in the console.
-
-    Parameters:
-    current_user (str): The name of the user whose score will be incremented.
-
-    This function locates the clicked user in the global class list dictionary,
-    increments their score by 10, and prints the updated user data to the console.
-    """
-    # Benutzerinformationen aus dem aktuellen Klassenlisten-Dictionary abrufen
-    user = current_classlist_dict[current_classlist['title']]
-    user_score = user[current_user]["score"]
-
-    # Erhöht den Score des angeklickten Benutzers um 10 Punkte
-    user[current_user].update({"score": user_score + 10})
-
-    # Gibt den aktualisierten Benutzerstatus in der Konsole aus (zur Kontrolle)
-    print(user[current_user])
-
 def on_classlist_click(cl_name):
     """
         Handles the event when a class list button is clicked.
@@ -168,6 +131,30 @@ def on_classlist_click(cl_name):
     # Wechselt zur Benutzeransicht im Interface
     class_user_grid_tab.set("users")
 
+# Funktion, die bei Klick auf einen Benutzer-Button ausgeführt wird
+def on_user_click(current_user):
+    """
+    Increases the score for a clicked user and displays the updated score in the console.
+
+    Parameters:
+    current_user (str): The name of the user whose score will be incremented.
+
+    This function locates the clicked user in the global class list dictionary,
+    increments their score by 10, and prints the updated user data to the console.
+    """
+    # Benutzerinformationen aus dem aktuellen Klassenlisten-Dictionary abrufen
+    user = current_classlist_dict[current_classlist['title']]
+    user_score = user[current_user]["score"]
+
+    # Erhöht den Score des angeklickten Benutzers um 10 Punkte
+    user[current_user].update({"score": user_score + 10})
+
+    # Save the action to the history
+    add_to_history(current_user)
+
+    # Gibt den aktualisierten Benutzerstatus in der Konsole aus (zur Kontrolle)
+    # print(user[current_user])
+
 def render_json_classlists():
     """
     Retrieves and sorts the list of JSON files in the class list directory.
@@ -187,6 +174,63 @@ def render_json_classlists():
     json_classlists.sort(reverse=True)
     return json_classlists  # Gibt die sortierte Liste der Klassendateien zurück
 
+# create log string with time and details, save & render it
+def add_to_history(new_history_entry):
+    # get time
+    now = datetime.datetime.now()
+    # make a format string
+    converted_entry = f"{now.hour}:{now.minute}:{now.second} {str(new_history_entry)} +10 Pts. \n"
+    # fill log list
+    session_history.append(converted_entry)
+    # start render of labels
+    render_history_labels(converted_entry)
+
+# renders history label and destroys oldest one
+def render_history_labels(label_text):
+    children = metric_frame.winfo_children()
+    # delete the oldest label everytime, if the log is >2 items
+    if len(session_history) > 3:
+        children[0].destroy()
+    # render label
+    history_label = ctk.CTkLabel(metric_frame, text=label_text)
+    history_label.grid(padx=7, pady=7, sticky="NWE")
+
+# "X"-Button Event manipulation to save log
+def on_closing():
+    now = datetime.datetime.now()
+    if messagebox.askokcancel("Quit", "Do you want to quit?"):
+        with open(f"./data/log/{current_classlist['title']}__{now.year}_{now.month}_{now.day}_{now.hour}.txt", "w") as writer:
+            writer.writelines(session_history)
+        app.destroy()
+
+# Bind ESC-Click to quit
+def destroy_anyway(e):
+    # app.destroy()
+    pass
+
+###############
+## App Setup ##
+###############
+ctk.set_appearance_mode("dark")
+ctk.set_default_color_theme("./config/theme/custom.json")
+app = ctk.CTk()
+app.title("Lurk.Alert()")
+app.geometry("620x720")
+app.protocol("WM_DELETE_WINDOW", on_closing)
+app.bind("<Escape>", destroy_anyway)
+
+##########
+## Main ##
+##########
+
+class_user_grid_frame = ctk.CTkFrame(app)
+class_user_grid_frame.pack(fill="both")
+class_user_grid_frame.grid_columnconfigure(0, weight=1)
+
+# Var
+current_classlist= {"title":""}
+current_classlist_dict = {}
+session_history = []
 
 #################################
 ## Classlist & User-Grid Frame ##
@@ -210,8 +254,13 @@ tab_users_frame.grid_columnconfigure((0,1,2), weight=1, minsize=200)
 tab_users_frame.grid()
 
 
+###################
+## History Frame ##
+###################
 
-
+metric_frame = ctk.CTkFrame(app)
+metric_frame.pack(fill="both", pady=5)
+metric_frame.grid_columnconfigure(0, weight=1)
 
 
 
