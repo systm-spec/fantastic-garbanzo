@@ -219,9 +219,10 @@ def on_add_button_click():
 
      # todo:
      # askopenfile: Start in Downloads (DONE)
-     # Titel der Datei ziehen
-     # Bereinigung/Transformation der JSON
+     # Titel der Datei ziehen (DONE)
+     # Bereinigung/Transformation der JSON (DONE)
      # Lösung für's Rendern der neuen JSON
+     # Delete Button
 
 
 
