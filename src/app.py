@@ -1,5 +1,5 @@
 import customtkinter as ctk
-from tkinter import filedialog
+from tkinter import messagebox
 import os
 import json
 from util.windows import check_for_windows
@@ -7,25 +7,6 @@ from util.event_info import info_me
 import datetime
 
 check_for_windows()
-
-###############
-## App Setup ##
-###############
-ctk.set_appearance_mode("dark")
-ctk.set_default_color_theme("./config/theme/custom.json")
-app = ctk.CTk()
-app.title("Lurk.Alert()")
-app.geometry("620x720")
-
-class_user_grid_frame = ctk.CTkFrame(app)
-class_user_grid_frame.pack(fill="both")
-class_user_grid_frame.grid_columnconfigure(0, weight=1)
-
-# semi-globals
-current_classlist= {"title":""}
-current_classlist_dict = {}
-session_history = []
-counter=[]
 
 ###############
 ## Functions ##
@@ -193,25 +174,63 @@ def render_json_classlists():
     json_classlists.sort(reverse=True)
     return json_classlists  # Gibt die sortierte Liste der Klassendateien zurück
 
-
+# create log string with time and details, save & render it
 def add_to_history(new_history_entry):
+    # get time
     now = datetime.datetime.now()
-    converted_entry = f"{now.hour}:{now.minute}:{now.second} {str(new_history_entry)} +10 Pts."
+    # make a format string
+    converted_entry = f"{now.hour}:{now.minute}:{now.second} {str(new_history_entry)} +10 Pts. \n"
+    # fill log list
     session_history.append(converted_entry)
+    # start render of labels
     render_history_labels(converted_entry)
 
-# Labels text & render
+# renders history label and destroys oldest one
 def render_history_labels(label_text):
     children = metric_frame.winfo_children()
-    if len(counter) > 2:
+    # delete the oldest label everytime, if the log is >2 items
+    if len(session_history) > 3:
         children[0].destroy()
-    else:
-        counter.append(1)
-
+    # render label
     history_label = ctk.CTkLabel(metric_frame, text=label_text)
     history_label.grid(padx=7, pady=7, sticky="NWE")
 
+# "X"-Button Event manipulation to save log
+def on_closing():
+    now = datetime.datetime.now()
+    if messagebox.askokcancel("Quit", "Do you want to quit?"):
+        with open(f"./data/log/{current_classlist['title']}__{now.year}_{now.month}_{now.day}_{now.hour}.txt", "w") as writer:
+            writer.writelines(session_history)
+        app.destroy()
 
+# Bind ESC-Click to quit
+def destroy_anyway(e):
+    # app.destroy()
+    pass
+
+###############
+## App Setup ##
+###############
+ctk.set_appearance_mode("dark")
+ctk.set_default_color_theme("./config/theme/custom.json")
+app = ctk.CTk()
+app.title("Lurk.Alert()")
+app.geometry("620x720")
+app.protocol("WM_DELETE_WINDOW", on_closing)
+app.bind("<Escape>", destroy_anyway)
+
+##########
+## Main ##
+##########
+
+class_user_grid_frame = ctk.CTkFrame(app)
+class_user_grid_frame.pack(fill="both")
+class_user_grid_frame.grid_columnconfigure(0, weight=1)
+
+# Var
+current_classlist= {"title":""}
+current_classlist_dict = {}
+session_history = []
 
 #################################
 ## Classlist & User-Grid Frame ##
@@ -242,8 +261,6 @@ tab_users_frame.grid()
 metric_frame = ctk.CTkFrame(app)
 metric_frame.pack(fill="both", pady=5)
 metric_frame.grid_columnconfigure(0, weight=1)
-
-
 
 
 
