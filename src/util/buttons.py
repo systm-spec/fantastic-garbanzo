@@ -1,6 +1,3 @@
-from doctest import master
-
-import customtkinter
 import customtkinter as ctk
 from tkinter import filedialog
 import os
@@ -15,12 +12,17 @@ app.title("Lurk.Alert()")
 app.geometry("620x720")
 
 
-add_icon= ctk.CTkImage(dark_image= Image.open('../assets/img/add_icon.png'),size=(20,20))
-frame= ctk.CTkFrame(master= app)
-add_button= ctk.CTkButton(master= frame,text='',image= add_icon, width=65, height=32)
+buttons_frame= ctk.CTkFrame(master= app)
+buttons_frame.grid()
 
-frame.grid()
+add_icon= ctk.CTkImage(dark_image= Image.open('../assets/img/add_icon.png'),
+                       size=(20,20))
+
+add_button= ctk.CTkButton(master= buttons_frame,text='',image= add_icon,
+                          width=65, height=32)
 add_button.grid()
+
+
 
 
 

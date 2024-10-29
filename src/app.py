@@ -1,5 +1,8 @@
+from fileinput import filename
+from tabnanny import filename_only
+
 import customtkinter as ctk
-from tkinter import filedialog
+from tkinter import filedialog as fd
 import os
 import json
 from util.windows import check_for_windows
@@ -189,6 +192,39 @@ def render_json_classlists():
     return json_classlists  # Gibt die sortierte Liste der Klassendateien zurück
 
 
+
+# Funktion, die bei Klick auf den Add-Button ausgeführt wird
+def on_add_button_click():
+     # Definieren der zu nutzenden Dateitypen
+     filetypes = (('text files', '*.txt'), ('All files', '*.*'))
+     # Bestimmung des Downloadpfads (muss bei egal welchem User funktionieren)
+     user_download_dir = os.path.join(os.path.expanduser("~"), "Downloads")
+     # Auswählen der einzulesenden Textdatei
+     file_path = fd.askopenfilename(initialdir=user_download_dir, filetypes=filetypes)
+     print(file_path)
+     # Extrahieren des Dateinamens
+     file_name = file_path.split("/")[-1].split(".")[0]
+     print(file_name)
+     # Einlesen der Txt-Datei
+     with open(file_path, "r", encoding="utf-8") as read_file:
+         file = read_file.read().split("\n")
+         print(type(file))
+         print(file)
+     # Aufrufen der Funktion zum Transferieren in eine JSON-Datei
+     create_save_json(file, file_name)
+     # Erstellte JSON_Datei rendern
+     # render_json_classlists()
+
+
+
+     # todo:
+     # askopenfile: Start in Downloads (DONE)
+     # Titel der Datei ziehen
+     # Bereinigung/Transformation der JSON
+     # Lösung für's Rendern der neuen JSON
+
+
+
 #################################
 ## Classlist & User-Grid Frame ##
 #################################
@@ -200,12 +236,20 @@ lists_tab = class_user_grid_tab.add("lists")
 class_user_grid_tab.set("lists")
 class_user_grid_tab.grid(padx=7, pady=7, sticky="NWE")
 
-# #add_classlist button
-# add_icon= ctk.CTkImage(dark_image= Image.open('./assets/img/add_icon.png'),size=(20,20))
-# frame= ctk.CTkFrame(master= app)
-# add_button= ctk.CTkButton(master= frame,text='',image= add_icon, width=65, height=32)
-# frame.grid()
-# add_button.grid()
+
+
+# Add- and Delete-Buttons
+# Parent Frame
+buttons_frame = ctk.CTkFrame(master=lists_tab, fg_color="transparent")
+buttons_frame.grid()
+# Add-Button Icon
+add_icon = ctk.CTkImage(dark_image= Image.open('./assets/img/add_icon.png'),
+                       size=(20,20))
+# Add-Button
+add_button = ctk.CTkButton(master=buttons_frame,text='',image=add_icon,
+                          width=65, height=32, command=lambda: on_add_button_click())
+add_button.grid()
+
 
 
 # scrollable frame for classlist jsons
