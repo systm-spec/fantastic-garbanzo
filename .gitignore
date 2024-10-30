@@ -5,7 +5,6 @@ __pycache__/
 *.idea
 .idea
 .idea/
-src/data/log/*.*
 
 # C extensions
 *.so
