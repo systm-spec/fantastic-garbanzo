@@ -233,10 +233,15 @@ def on_add_button_click():
      # Lösung für's Rendern der neuen JSON
      # Delete Button
 
-
+# Funktion, die bei Klick auf den Del-Button ausgeführt wird
 def delete_btn_click(crazy_name):
-    print(crazy_name)
-    msg= messagebox.askyesno('do you want really delete this!')
+    if messagebox.askyesno(message=f'{crazy_name} asks: Do you really '
+                                           f'wanna hurt me?'):
+        del_path = f"./config/user_data/{crazy_name}"
+        os.remove(del_path)
+        print("Vor init")
+        init()
+        print("Nach init")
 
 
 
