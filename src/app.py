@@ -8,6 +8,7 @@ from PIL import Image
 from tkinter import messagebox
 import datetime
 import random
+from numpy import random
 
 check_for_windows()
 
@@ -267,10 +268,11 @@ def do_random():
     scores =current_classlist_dict[current_classlist["title"]].items()
     print("01",scores)
     b = [{'score': b['score'], 'name':b["name"]} for a,b in scores]
-    low_count = [x.name for x in filter(lambda a: a["score"]<30, b)]
+    low_count = [x["name"] for x in filter(lambda a: a["score"]<30, b)]
     print(low_count)
-    # random einbauen mit den name aus low_count und an den dialog uebergeben
-    # messagebox.showinfo(title="Tadaaaa", message=f"{r}")
+    rnd_user = random.choice(low_count)
+    messagebox.showinfo(title="RNG", message=f"Folgender Studi lurkt sehr "
+                                             f"gern:\n 🕵🏼 {rnd_user} 🕵🏼 ")
 
 ###############
 ## App Setup ##
