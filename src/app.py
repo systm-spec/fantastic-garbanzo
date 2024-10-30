@@ -38,29 +38,32 @@ def init():
     adds it to the scroll frame in the UI, and assigns a command that triggers
     when the button is clicked to load the corresponding class list.
     """
+    tab_row_count = 0
     # Iteriert durch alle gefundenen Klassendateien und erstellt Buttons dafür
     for item in render_json_classlists():
         user_btn = ctk.CTkButton(
             classlist_scroll_frame,
-            width=32,  # Breite des Buttons
+                        # Breite des Buttons
             text=item,  # Text des Buttons ist der Name der Klassendatei
             corner_radius=12,  # Abgerundete Ecken für ein besseres UI-Design
-            fg_color="transparent",  # Hintergrundfarbe des Buttons
+            fg_color="transparent", # Hintergrundfarbe des Buttons
             # Weisst jedem Button eine Funktion zu, die beim Klick die Klasse lädt
             command=lambda cl_name=item: on_classlist_click(cl_name)
         )
         delete_button = ctk.CTkButton(
             classlist_scroll_frame,
+            crazy_btn = item,
             text='',
             image=delete_icon,
             width=32,
             corner_radius=12,
-            fg_color="transparent"
+            fg_color="red",
+            command=lambda item:
         )
         # Platziert den Button im Scroll-Frame der Benutzeroberfläche
-        user_btn.grid(column=1)
-        delete_button.grid(column=0)
-
+        user_btn.grid(row=tab_row_count, column=0)
+        delete_button.grid(row=tab_row_count, column=1)
+        tab_row_count += 1
 # Funktion zum Rendern der Benutzerliste
 def render_classlist_users(users):
     """
@@ -231,8 +234,8 @@ def on_add_button_click():
      # Delete Button
 
 
-
-
+def delete_btn_click():
+    
 
 #################################
 ## Classlist & User-Grid Frame ##
@@ -244,6 +247,7 @@ users_tab = class_user_grid_tab.add("users")
 lists_tab = class_user_grid_tab.add("lists")
 class_user_grid_tab.set("lists")
 class_user_grid_tab.grid(padx=7, pady=7, sticky="NWE")
+
 
 
 
