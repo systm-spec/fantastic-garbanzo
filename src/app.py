@@ -6,7 +6,7 @@ from util.windows import check_for_windows
 from util.event_info import info_me
 from PIL import Image
 from tkinter import messagebox
-
+import time
 check_for_windows()
 
 ###############
@@ -239,12 +239,15 @@ def delete_btn_click(crazy_name):
                                            f'wanna hurt me?'):
         del_path = f"./config/user_data/{crazy_name}"
         os.remove(del_path)
-        print("Vor init")
-        init()
-        print("Nach init")
 
 
-
+def re_render_cl():
+    for item in render_json_classlists():
+        user_btn = ctk.CTkButton(classlist_scroll_frame,
+                                text=item,
+                                corner_radius=12,
+                                fg_color="transparent",
+                                command=lambda cl_name=item: on_classlist_click(cl_name))
 #################################
 ## Classlist & User-Grid Frame ##
 #################################
