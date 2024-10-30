@@ -5,6 +5,7 @@ import json
 from util.windows import check_for_windows
 from util.event_info import info_me
 from PIL import Image
+from tkinter import messagebox
 
 check_for_windows()
 
@@ -52,13 +53,12 @@ def init():
         )
         delete_button = ctk.CTkButton(
             classlist_scroll_frame,
-            crazy_btn = item,
             text='',
             image=delete_icon,
             width=32,
             corner_radius=12,
             fg_color="red",
-            command=lambda item:
+            command=lambda crazy_name = item: delete_btn_click(crazy_name)
         )
         # Platziert den Button im Scroll-Frame der Benutzeroberfläche
         user_btn.grid(row=tab_row_count, column=0)
@@ -234,8 +234,11 @@ def on_add_button_click():
      # Delete Button
 
 
-def delete_btn_click():
-    
+def delete_btn_click(crazy_name):
+    print(crazy_name)
+    msg= messagebox.askyesno('do you want really delete this!')
+
+
 
 #################################
 ## Classlist & User-Grid Frame ##
@@ -258,6 +261,13 @@ buttons_frame.grid()
 # Add-Button Icon
 add_icon = ctk.CTkImage(dark_image=Image.open('./assets/img/add_icon.png'),
                        size=(20,20))
+del_icon = ctk.CTkImage(dark_image= Image.open('./assets/img/trash.png'),
+                       size=(20,20))
+delete_button= ctk.CTkButton(master=buttons_frame, text='', image=del_icon,
+                             width=65, height= 32)
+
+delete_button.grid()
+
 # Add-Button
 add_button = ctk.CTkButton(master=buttons_frame, text='', image=add_icon,
                           width=65, height=32, command=lambda: on_add_button_click())

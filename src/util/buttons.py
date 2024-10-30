@@ -24,7 +24,4 @@ add_button.grid()
 
 
 
-
-
-
 app.mainloop()
