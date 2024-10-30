@@ -7,11 +7,13 @@ from util.event_info import info_me
 from PIL import Image
 from tkinter import messagebox
 import time
+
 check_for_windows()
 
 ###############
 ## App Setup ##
 ###############
+
 ctk.set_appearance_mode("dark")
 ctk.set_default_color_theme("./config/theme/custom.json")
 app = ctk.CTk()
@@ -64,6 +66,7 @@ def init():
         user_btn.grid(row=tab_row_count, column=0)
         delete_button.grid(row=tab_row_count, column=1)
         tab_row_count += 1
+
 # Funktion zum Rendern der Benutzerliste
 def render_classlist_users(users):
     """
@@ -154,6 +157,7 @@ def on_user_click(current_user):
     # Gibt den aktualisierten Benutzerstatus in der Konsole aus (zur Kontrolle)
     print(user[current_user])
 
+# Funktion, die bei Klick auf die Classlist die User rendert und den Tab öffnet
 def on_classlist_click(cl_name):
     """
         Handles the event when a class list button is clicked.
@@ -181,6 +185,7 @@ def on_classlist_click(cl_name):
     # Wechselt zur Benutzeransicht im Interface
     class_user_grid_tab.set("users")
 
+# Funktion, die eine Liste von JSON-Dateien sortiert und in einer Var ausgibt
 def render_json_classlists():
     """
     Retrieves and sorts the list of JSON files in the class list directory.
@@ -199,8 +204,6 @@ def render_json_classlists():
     # Sortiert die Klassendateien in umgekehrter alphabetischer Reihenfolge
     json_classlists.sort(reverse=True)
     return json_classlists  # Gibt die sortierte Liste der Klassendateien zurück
-
-
 
 # Funktion, die bei Klick auf den Add-Button ausgeführt wird
 def on_add_button_click():
@@ -222,48 +225,22 @@ def on_add_button_click():
      # Aufrufen der Funktion zum Transferieren in eine JSON-Datei
      create_save_json(file, file_name)
      # Erstellte JSON_Datei rendern
-     # render_json_classlists()
-
-
-
-     # todo:
-     # askopenfile: Start in Downloads (DONE)
-     # Titel der Datei ziehen (DONE)
-     # Bereinigung/Transformation der JSON (DONE)
-     # Lösung für's Rendern der neuen JSON
-     # Delete Button
+     for child in classlist_scroll_frame.winfo_children():
+         child.destroy()
+     init()
 
 # Funktion, die bei Klick auf den Del-Button ausgeführt wird
 def delete_btn_click(crazy_name):
+    # Ruft einen Dialog auf welcher das Löschen verifiziert
     if messagebox.askyesno(message=f'{crazy_name} asks: Do you really '
                                            f'wanna hurt me?'):
+        # Ruft den Pfad auf, löscht die JSON-Datei, löscht alle Button und
+        # führt das init-Rendering neu aus.
         del_path = f"./config/user_data/{crazy_name}"
         os.remove(del_path)
-        time.sleep(8)
-        re_render_cl()
-
-
-
-def re_render_cl():
-    tab_row_count = 0
-    for item in render_json_classlists():
-        user_btn = ctk.CTkButton(classlist_scroll_frame,
-                                text=item,
-                                corner_radius=12,
-                                fg_color="transparent",
-                                command=lambda cl_name=item: on_classlist_click(cl_name))
-
-        delete_button = ctk.CTkButton(classlist_scroll_frame,
-                                      text= '',
-                                      image= delete_icon,
-                                      width=32,
-                                      corner_radius= 12,
-                                      fg_color= 'red',
-                                      command=lambda crazy_name= item: delete_btn_click(crazy_name))
-
-        user_btn.grid(row=tab_row_count, column=0)
-        delete_button.grid(row=tab_row_count, column=1)
-        tab_row_count += 1
+        for child in classlist_scroll_frame.winfo_children():
+            child.destroy()
+        init()
 
 #################################
 ## Classlist & User-Grid Frame ##
@@ -276,9 +253,6 @@ lists_tab = class_user_grid_tab.add("lists")
 class_user_grid_tab.set("lists")
 class_user_grid_tab.grid(padx=7, pady=7, sticky="NWE")
 
-
-
-
 # Add- and Delete-Buttons
 # Parent Frame
 buttons_frame = ctk.CTkFrame(master=lists_tab, fg_color="transparent")
@@ -286,27 +260,14 @@ buttons_frame.grid()
 # Add-Button Icon
 add_icon = ctk.CTkImage(dark_image=Image.open('./assets/img/add_icon.png'),
                        size=(20,20))
-del_icon = ctk.CTkImage(dark_image= Image.open('./assets/img/trash.png'),
-                       size=(20,20))
-delete_button= ctk.CTkButton(master=buttons_frame, text='', image=del_icon,
-                             width=65, height= 32)
-
-delete_button.grid()
-
 # Add-Button
 add_button = ctk.CTkButton(master=buttons_frame, text='', image=add_icon,
                           width=65, height=32, command=lambda: on_add_button_click())
 add_button.grid()
 
-# Delete-Button
-# Delete-Button-Icon
+# Del-Button Icon
 delete_icon = ctk.CTkImage(dark_image=Image.open('./assets/img/delete_icon.png'),
-                           size=(15,15))
-
-# Delete Btn
-
-
-
+                       size=(20,20))
 
 # scrollable frame for classlist jsons
 classlist_scroll_frame = ctk.CTkScrollableFrame(lists_tab, width=235)
@@ -318,12 +279,6 @@ classlist_scroll_frame.grid(column=1, pady=12, padx=8)
 tab_users_frame = ctk.CTkFrame(users_tab, fg_color="transparent")
 tab_users_frame.grid_columnconfigure((0,1,2), weight=1, minsize=200)
 tab_users_frame.grid()
-
-
-
-
-
-
 
 
 init()
