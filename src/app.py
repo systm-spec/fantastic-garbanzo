@@ -1,6 +1,3 @@
-from fileinput import filename
-from tabnanny import filename_only
-
 import customtkinter as ctk
 from tkinter import filedialog as fd
 import os
@@ -52,8 +49,17 @@ def init():
             # Weisst jedem Button eine Funktion zu, die beim Klick die Klasse lädt
             command=lambda cl_name=item: on_classlist_click(cl_name)
         )
+        delete_button = ctk.CTkButton(
+            classlist_scroll_frame,
+            text='',
+            image=delete_icon,
+            width=32,
+            corner_radius=12,
+            fg_color="transparent"
+        )
         # Platziert den Button im Scroll-Frame der Benutzeroberfläche
-        user_btn.grid(sticky="ew")
+        user_btn.grid(column=1)
+        delete_button.grid(column=0)
 
 # Funktion zum Rendern der Benutzerliste
 def render_classlist_users(users):
@@ -226,6 +232,8 @@ def on_add_button_click():
 
 
 
+
+
 #################################
 ## Classlist & User-Grid Frame ##
 #################################
@@ -244,18 +252,27 @@ class_user_grid_tab.grid(padx=7, pady=7, sticky="NWE")
 buttons_frame = ctk.CTkFrame(master=lists_tab, fg_color="transparent")
 buttons_frame.grid()
 # Add-Button Icon
-add_icon = ctk.CTkImage(dark_image= Image.open('./assets/img/add_icon.png'),
+add_icon = ctk.CTkImage(dark_image=Image.open('./assets/img/add_icon.png'),
                        size=(20,20))
 # Add-Button
-add_button = ctk.CTkButton(master=buttons_frame,text='',image=add_icon,
+add_button = ctk.CTkButton(master=buttons_frame, text='', image=add_icon,
                           width=65, height=32, command=lambda: on_add_button_click())
 add_button.grid()
+
+# Delete-Button
+# Delete-Button-Icon
+delete_icon = ctk.CTkImage(dark_image=Image.open('./assets/img/delete_icon.png'),
+                           size=(15,15))
+
+# Delete Btn
+
 
 
 
 # scrollable frame for classlist jsons
-classlist_scroll_frame = ctk.CTkScrollableFrame(lists_tab)
-lists_tab.grid_columnconfigure(0, weight=1)
+classlist_scroll_frame = ctk.CTkScrollableFrame(lists_tab, width=235)
+lists_tab.grid_columnconfigure(0, weight=6)
+lists_tab.grid_columnconfigure(1, weight=1)
 classlist_scroll_frame.grid(column=1, pady=12, padx=8)
 
 # parent frame for class-members
