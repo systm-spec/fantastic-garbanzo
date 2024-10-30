@@ -4,10 +4,8 @@ from tkinter import messagebox
 import os
 import json
 from util.windows import check_for_windows
-from util.event_info import info_me
 from PIL import Image
 from tkinter import messagebox
-import time
 import datetime
 
 check_for_windows()
@@ -195,27 +193,27 @@ def render_json_classlists():
 
 # Funktion, die bei Klick auf den Add-Button ausgeführt wird
 def on_add_button_click():
-     # Definieren der zu nutzenden Dateitypen
-     filetypes = (('text files', '*.txt'), ('All files', '*.*'))
-     # Bestimmung des Downloadpfads (muss bei egal welchem User funktionieren)
-     user_download_dir = os.path.join(os.path.expanduser("~"), "Downloads")
-     # Auswählen der einzulesenden Textdatei
-     file_path = fd.askopenfilename(initialdir=user_download_dir, filetypes=filetypes)
-     print(file_path)
-     # Extrahieren des Dateinamens
-     file_name = file_path.split("/")[-1].split(".")[0]
-     print(file_name)
-     # Einlesen der Txt-Datei
-     with open(file_path, "r", encoding="utf-8") as read_file:
-         file = read_file.read().split("\n")
-         print(type(file))
-         print(file)
-     # Aufrufen der Funktion zum Transferieren in eine JSON-Datei
-     create_save_json(file, file_name)
-     # Erstellte JSON_Datei rendern
-     for child in classlist_scroll_frame.winfo_children():
-         child.destroy()
-     init()
+    # Definieren der zu nutzenden Dateitypen
+    filetypes = (('text files', '*.txt'), ('All files', '*.*'))
+    # Bestimmung des Downloadpfads (muss bei egal welchem User funktionieren)
+    user_download_dir = os.path.join(os.path.expanduser("~"), "Downloads")
+    # Auswählen der einzulesenden Textdatei
+    file_path = fd.askopenfilename(initialdir=user_download_dir, filetypes=filetypes)
+    print(file_path)
+    # Extrahieren des Dateinamens
+    file_name = file_path.split("/")[-1].split(".")[0]
+    print(file_name)
+    # Einlesen der Txt-Datei
+    with open(file_path, "r", encoding="utf-8") as read_file:
+        file = read_file.read().split("\n")
+        print(type(file))
+        print(file)
+    # Aufrufen der Funktion zum Transferieren in eine JSON-Datei
+    create_save_json(file, file_name)
+    # Erstellte JSON_Datei rendern
+    for child in classlist_scroll_frame.winfo_children():
+        child.destroy()
+    init()
 
 # Funktion, die bei Klick auf den Del-Button ausgeführt wird
 def delete_btn_click(crazy_name):
@@ -251,7 +249,7 @@ def render_history_labels(label_text):
     history_label = ctk.CTkLabel(metric_frame, text=label_text)
     history_label.grid(padx=7, pady=7, sticky="NWE")
 
-# "X"-Button Event manipulation to save log
+# "X"-Button Event manipulation to save (history-) log
 def on_closing():
     now = datetime.datetime.now()
     if messagebox.askokcancel("Quit", "Do you want to quit?"):
