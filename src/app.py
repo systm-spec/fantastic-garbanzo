@@ -1,9 +1,13 @@
 import customtkinter as ctk
+from tkinter import filedialog as fd
 from tkinter import messagebox
 import os
 import json
 from util.windows import check_for_windows
 from util.event_info import info_me
+from PIL import Image
+from tkinter import messagebox
+import time
 import datetime
 
 check_for_windows()
@@ -21,19 +25,31 @@ def init():
     adds it to the scroll frame in the UI, and assigns a command that triggers
     when the button is clicked to load the corresponding class list.
     """
+    tab_row_count = 0
     # Iteriert durch alle gefundenen Klassendateien und erstellt Buttons dafür
     for item in render_json_classlists():
         user_btn = ctk.CTkButton(
             classlist_scroll_frame,
-            width=32,  # Breite des Buttons
+                        # Breite des Buttons
             text=item,  # Text des Buttons ist der Name der Klassendatei
             corner_radius=12,  # Abgerundete Ecken für ein besseres UI-Design
-            fg_color="transparent",  # Hintergrundfarbe des Buttons
+            fg_color="transparent", # Hintergrundfarbe des Buttons
             # Weisst jedem Button eine Funktion zu, die beim Klick die Klasse lädt
             command=lambda cl_name=item: on_classlist_click(cl_name)
         )
+        delete_button = ctk.CTkButton(
+            classlist_scroll_frame,
+            text='',
+            image=delete_icon,
+            width=32,
+            corner_radius=12,
+            fg_color="red",
+            command=lambda crazy_name = item: delete_btn_click(crazy_name)
+        )
         # Platziert den Button im Scroll-Frame der Benutzeroberfläche
-        user_btn.grid(sticky="ew")
+        user_btn.grid(row=tab_row_count, column=0)
+        delete_button.grid(row=tab_row_count, column=1)
+        tab_row_count += 1
 
 # Funktion zum Rendern der Benutzerliste
 def render_classlist_users(users):
@@ -104,6 +120,7 @@ def create_save_json(user_list, title):
     with open(f"config/user_data/{title}.json", "w") as f:
         json.dump(class_list_data, f)
 
+        
 def on_classlist_click(cl_name):
     """
         Handles the event when a class list button is clicked.
@@ -131,7 +148,8 @@ def on_classlist_click(cl_name):
     # Wechselt zur Benutzeransicht im Interface
     class_user_grid_tab.set("users")
 
-# Funktion, die bei Klick auf einen Benutzer-Button ausgeführt wird
+
+# Funktion, die eine Liste von JSON-Dateien sortiert und in einer Var ausgibt
 def on_user_click(current_user):
     """
     Increases the score for a clicked user and displays the updated score in the console.
@@ -155,6 +173,7 @@ def on_user_click(current_user):
     # Gibt den aktualisierten Benutzerstatus in der Konsole aus (zur Kontrolle)
     # print(user[current_user])
 
+
 def render_json_classlists():
     """
     Retrieves and sorts the list of JSON files in the class list directory.
@@ -173,6 +192,43 @@ def render_json_classlists():
     # Sortiert die Klassendateien in umgekehrter alphabetischer Reihenfolge
     json_classlists.sort(reverse=True)
     return json_classlists  # Gibt die sortierte Liste der Klassendateien zurück
+
+# Funktion, die bei Klick auf den Add-Button ausgeführt wird
+def on_add_button_click():
+     # Definieren der zu nutzenden Dateitypen
+     filetypes = (('text files', '*.txt'), ('All files', '*.*'))
+     # Bestimmung des Downloadpfads (muss bei egal welchem User funktionieren)
+     user_download_dir = os.path.join(os.path.expanduser("~"), "Downloads")
+     # Auswählen der einzulesenden Textdatei
+     file_path = fd.askopenfilename(initialdir=user_download_dir, filetypes=filetypes)
+     print(file_path)
+     # Extrahieren des Dateinamens
+     file_name = file_path.split("/")[-1].split(".")[0]
+     print(file_name)
+     # Einlesen der Txt-Datei
+     with open(file_path, "r", encoding="utf-8") as read_file:
+         file = read_file.read().split("\n")
+         print(type(file))
+         print(file)
+     # Aufrufen der Funktion zum Transferieren in eine JSON-Datei
+     create_save_json(file, file_name)
+     # Erstellte JSON_Datei rendern
+     for child in classlist_scroll_frame.winfo_children():
+         child.destroy()
+     init()
+
+# Funktion, die bei Klick auf den Del-Button ausgeführt wird
+def delete_btn_click(crazy_name):
+    # Ruft einen Dialog auf welcher das Löschen verifiziert
+    if messagebox.askyesno(message=f'{crazy_name} asks: Do you really '
+                                           f'wanna hurt me?'):
+        # Ruft den Pfad auf, löscht die JSON-Datei, löscht alle Button und
+        # führt das init-Rendering neu aus.
+        del_path = f"./config/user_data/{crazy_name}"
+        os.remove(del_path)
+        for child in classlist_scroll_frame.winfo_children():
+            child.destroy()
+        init()
 
 # create log string with time and details, save & render it
 def add_to_history(new_history_entry):
@@ -243,9 +299,27 @@ lists_tab = class_user_grid_tab.add("lists")
 class_user_grid_tab.set("lists")
 class_user_grid_tab.grid(padx=7, pady=7, sticky="NWE")
 
+# Add- and Delete-Buttons
+# Parent Frame
+buttons_frame = ctk.CTkFrame(master=lists_tab, fg_color="transparent")
+buttons_frame.grid()
+
+# Add-Button Icon
+add_icon = ctk.CTkImage(dark_image=Image.open('./assets/img/add_icon.png'),
+                       size=(20,20))
+# Add-Button
+add_button = ctk.CTkButton(master=buttons_frame, text='', image=add_icon,
+                          width=65, height=32, command=lambda: on_add_button_click())
+add_button.grid()
+
+# Del-Button Icon
+delete_icon = ctk.CTkImage(dark_image=Image.open('./assets/img/delete_icon.png'),
+                       size=(20,20))
+
 # scrollable frame for classlist jsons
-classlist_scroll_frame = ctk.CTkScrollableFrame(lists_tab)
-lists_tab.grid_columnconfigure(0, weight=1)
+classlist_scroll_frame = ctk.CTkScrollableFrame(lists_tab, width=235)
+lists_tab.grid_columnconfigure(0, weight=6)
+lists_tab.grid_columnconfigure(1, weight=1)
 classlist_scroll_frame.grid(column=1, pady=12, padx=8)
 
 # parent frame for class-members
@@ -261,6 +335,7 @@ tab_users_frame.grid()
 metric_frame = ctk.CTkFrame(app)
 metric_frame.pack(fill="both", pady=5)
 metric_frame.grid_columnconfigure(0, weight=1)
+
 
 
 

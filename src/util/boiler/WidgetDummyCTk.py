@@ -4,7 +4,7 @@ import tkinter as tk
 from customtkinter import CTkFrame
 
 root = ctk.CTk()
-root.geometry("600x800")
+root.geometry("1000x1000")
 root.grid_rowconfigure(0, weight=1)
 root.grid_columnconfigure(0, weight=1)
 
@@ -148,13 +148,13 @@ segemented_button.set("Value 1")
 segemented_button.grid()
 
 # Textbox
-# textbox = ctk.CTkTextbox(root)
-#
-# textbox.insert("0.0", "new text to insert")  # insert at line 0 character 0
-# text = textbox.get("0.0", "end")  # get text from line 0 character 0 till the end
-# textbox.delete("0.0", "end")  # delete all text
-# textbox.configure(state="normal")  # configure textbox to be read-only
+textbox = ctk.CTkTextbox(root)
 
-# textbox.grid()
+textbox.insert("0.0", "new text to insert")  # insert at line 0 character 0
+text = textbox.get("0.0", "end")  # get text from line 0 character 0 till the end
+textbox.delete("0.0", "end")  # delete all text
+textbox.configure(state="normal")  # configure textbox to be read-only
+
+textbox.grid()
 
 root.mainloop()
