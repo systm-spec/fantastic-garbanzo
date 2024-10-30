@@ -5,7 +5,6 @@ __pycache__/
 *.idea
 .idea
 .idea/
-src/history/log/*.txt
 
 # C extensions
 *.so
