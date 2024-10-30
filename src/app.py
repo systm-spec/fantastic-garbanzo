@@ -30,10 +30,11 @@ def init():
     for item in render_json_classlists():
         user_btn = ctk.CTkButton(
             classlist_scroll_frame,
-                        # Breite des Buttons
-            text=item,  # Text des Buttons ist der Name der Klassendatei
-            corner_radius=12,  # Abgerundete Ecken für ein besseres UI-Design
-            fg_color="transparent", # Hintergrundfarbe des Buttons
+            text=item,
+            corner_radius=0,
+            border_width=1,
+            border_color="#3f3f46",
+            fg_color="transparent",
             # Weisst jedem Button eine Funktion zu, die beim Klick die Klasse lädt
             command=lambda cl_name=item: on_classlist_click(cl_name)
         )
@@ -42,13 +43,15 @@ def init():
             text='',
             image=delete_icon,
             width=32,
-            corner_radius=12,
-            fg_color="red",
+            hover_color="#920b3a",
+            corner_radius=0,
+            fg_color="transparent",
+            bg_color="#4f000b",
             command=lambda crazy_name = item: delete_btn_click(crazy_name)
         )
         # Platziert den Button im Scroll-Frame der Benutzeroberfläche
-        user_btn.grid(row=tab_row_count, column=0)
-        delete_button.grid(row=tab_row_count, column=1)
+        user_btn.grid(row=tab_row_count, column=0, sticky="EW", pady=(0, 4))
+        delete_button.grid(row=tab_row_count, column=1, pady=(0, 4))
         tab_row_count += 1
 
 # Funktion zum Rendern der Benutzerliste
@@ -72,6 +75,7 @@ def render_classlist_users(users):
         user_btn = ctk.CTkButton(
             tab_users_frame,
             height=50,
+            width=197,
             text=user,
             corner_radius=0,
             fg_color="transparent",
@@ -249,7 +253,7 @@ def render_history_labels(label_text):
         children[0].destroy()
     # render label
     history_label = ctk.CTkLabel(metric_frame, text=label_text)
-    history_label.grid(padx=7, pady=7, sticky="NWE")
+    history_label.grid(padx=7, pady=(10, 0), sticky="NSWE")
 
 # "X"-Button Event manipulation to save (history-) log
 def on_closing():
@@ -281,9 +285,14 @@ ctk.set_appearance_mode("dark")
 ctk.set_default_color_theme("./config/theme/custom.json")
 app = ctk.CTk()
 app.title("Lurk.Alert()")
-app.geometry("620x720")
+app.geometry("620x740")
+# app_icon = Image.open(r"./assets/img/trash.png")
+# app_icon.save("icon.ico", format="ICO", sizes=[(32, 32)])
+# app.wm_icon(bitmap=r"./assets/img/icon.ico")
+app.resizable(False, False)
 app.protocol("WM_DELETE_WINDOW", on_closing)
 app.bind("<Escape>", destroy_anyway)
+
 
 ##########
 ## Main ##
@@ -309,28 +318,36 @@ lists_tab = class_user_grid_tab.add("lists")
 class_user_grid_tab.set("lists")
 class_user_grid_tab.grid(padx=7, pady=7, sticky="NWE")
 
+#######################
+## Scrollable  Frame ##
+#######################
+
+# scrollable frame for classlist jsons
+classlist_scroll_frame = ctk.CTkScrollableFrame(lists_tab, width=235)
+classlist_scroll_frame.grid(row=1, column=0, pady=12, padx=8, ipadx=22, ipady=14)
+classlist_scroll_frame.grid_columnconfigure(0, weight=1)
+lists_tab.grid_columnconfigure(0, weight=1)
+lists_tab.grid_rowconfigure(0, weight=10)
+lists_tab.grid_rowconfigure(1, weight=1)
+
 # Add- and Delete-Buttons
 # Parent Frame
-buttons_frame = ctk.CTkFrame(master=lists_tab, fg_color="transparent")
-buttons_frame.grid()
+buttons_frame = ctk.CTkFrame(master=app)
+buttons_frame.pack(fill="both", pady=(5, 0))
+buttons_frame.grid_columnconfigure(index=0, weight=1)
 
 # Add-Button Icon
 add_icon = ctk.CTkImage(dark_image=Image.open('./assets/img/add_icon.png'),
                        size=(20,20))
 # Add-Button
 add_button = ctk.CTkButton(master=buttons_frame, text='', image=add_icon,
-                          width=65, height=32, command=lambda: on_add_button_click())
-add_button.grid()
+                           corner_radius=0, fg_color="transparent",
+                           command=lambda: on_add_button_click())
+add_button.grid(sticky="NWE")
 
 # Del-Button Icon
 delete_icon = ctk.CTkImage(dark_image=Image.open('./assets/img/delete_icon.png'),
-                       size=(20,20))
-
-# scrollable frame for classlist jsons
-classlist_scroll_frame = ctk.CTkScrollableFrame(lists_tab, width=235)
-lists_tab.grid_columnconfigure(0, weight=6)
-lists_tab.grid_columnconfigure(1, weight=1)
-classlist_scroll_frame.grid(column=1, pady=12, padx=8)
+                       size=(18,18))
 
 # parent frame for class-members
 tab_users_frame = ctk.CTkFrame(users_tab, fg_color="transparent")
@@ -342,10 +359,11 @@ tab_users_frame.grid()
 ###################
 
 random_btn_frame = ctk.CTkFrame(app)
-random_btn_frame.pack(fill="both", pady=5)
+random_btn_frame.pack(fill="both", pady=(5, 0))
 random_btn_frame.grid_columnconfigure(index=0, weight=1)
 
-rng_btn = ctk.CTkButton(random_btn_frame, command=do_random)
+rng_btn = ctk.CTkButton(random_btn_frame, corner_radius=0, text="Random Lurker",
+                        fg_color="transparent", command=do_random)
 rng_btn.grid(sticky="nwe")
 
 
