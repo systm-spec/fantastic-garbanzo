@@ -94,10 +94,10 @@ def create_save_json(user_list, title):
 
     Parameters:
     user_list (list): List of user names to be stored in the JSON file.
-    title (str): Title used as the JSON filename and as the main key in the data.
+    title (str): Title used as the JSON filename and as the main key in the history.
 
     This function takes a list of user names, assigns each an ID and initial score,
-    and then saves the data as a JSON file. It also updates global class list data.
+    and then saves the history as a JSON file. It also updates global class list history.
     """
     # Erstellt ein Dictionary mit dem Titel als Schlüssel für die JSON-Datei
     class_list_data = {title: {}}
@@ -127,7 +127,7 @@ def on_classlist_click(cl_name):
         cl_name (str): The name of the class list file that was clicked.
 
         This function opens the specified class list JSON file, reads its content,
-        and updates the application's current class list data. It then renders the
+        and updates the application's current class list history. It then renders the
         list of users from that class in the user interface.
         """
     # Öffnet die JSON-Datei der angeklickten Klasse im Lesemodus
@@ -156,7 +156,7 @@ def on_user_click(current_user):
     current_user (str): The name of the user whose score will be incremented.
 
     This function locates the clicked user in the global class list dictionary,
-    increments their score by 10, and prints the updated user data to the console.
+    increments their score by 10, and prints the updated user history to the console.
     """
     # Benutzerinformationen aus dem aktuellen Klassenlisten-Dictionary abrufen
     user = current_classlist_dict[current_classlist['title']]
@@ -253,7 +253,7 @@ def render_history_labels(label_text):
 def on_closing():
     now = datetime.datetime.now()
     if messagebox.askokcancel("Quit", "Do you want to quit?"):
-        with open(f"./data/log/{current_classlist['title']}__{now.year}_{now.month}_{now.day}_{now.hour}.txt", "w") as writer:
+        with open(f"history/log/{current_classlist['title']}__{now.year}_{now.month}_{now.day}_{now.hour}.txt", "w") as writer:
             writer.writelines(session_history)
         app.destroy()
 
