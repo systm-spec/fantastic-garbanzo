@@ -239,15 +239,32 @@ def delete_btn_click(crazy_name):
                                            f'wanna hurt me?'):
         del_path = f"./config/user_data/{crazy_name}"
         os.remove(del_path)
+        time.sleep(8)
+        re_render_cl()
+
 
 
 def re_render_cl():
+    tab_row_count = 0
     for item in render_json_classlists():
         user_btn = ctk.CTkButton(classlist_scroll_frame,
                                 text=item,
                                 corner_radius=12,
                                 fg_color="transparent",
                                 command=lambda cl_name=item: on_classlist_click(cl_name))
+
+        delete_button = ctk.CTkButton(classlist_scroll_frame,
+                                      text= '',
+                                      image= delete_icon,
+                                      width=32,
+                                      corner_radius= 12,
+                                      fg_color= 'red',
+                                      command=lambda crazy_name= item: delete_btn_click(crazy_name))
+
+        user_btn.grid(row=tab_row_count, column=0)
+        delete_button.grid(row=tab_row_count, column=1)
+        tab_row_count += 1
+
 #################################
 ## Classlist & User-Grid Frame ##
 #################################
