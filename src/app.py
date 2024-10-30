@@ -7,6 +7,8 @@ from util.windows import check_for_windows
 from PIL import Image
 from tkinter import messagebox
 import datetime
+import random
+from numpy import random
 
 check_for_windows()
 
@@ -259,8 +261,18 @@ def on_closing():
 
 # Bind ESC-Click to quit
 def destroy_anyway(e):
-    # app.destroy()
-    pass
+    app.destroy()
+
+def do_random():
+    r = random.randint(1,10)
+    scores =current_classlist_dict[current_classlist["title"]].items()
+    print("01",scores)
+    b = [{'score': b['score'], 'name':b["name"]} for a,b in scores]
+    low_count = [x["name"] for x in filter(lambda a: a["score"]<30, b)]
+    print(low_count)
+    rnd_user = random.choice(low_count)
+    messagebox.showinfo(title="RNG", message=f"Folgender Studi lurkt sehr "
+                                             f"gern:\n 🕵🏼 {rnd_user} 🕵🏼 ")
 
 ###############
 ## App Setup ##
@@ -325,6 +337,18 @@ tab_users_frame = ctk.CTkFrame(users_tab, fg_color="transparent")
 tab_users_frame.grid_columnconfigure((0,1,2), weight=1, minsize=200)
 tab_users_frame.grid()
 
+###################
+## Random Frame ##
+###################
+
+random_btn_frame = ctk.CTkFrame(app)
+random_btn_frame.pack(fill="both", pady=5)
+random_btn_frame.grid_columnconfigure(index=0, weight=1)
+
+rng_btn = ctk.CTkButton(random_btn_frame, command=do_random)
+rng_btn.grid(sticky="nwe")
+
+
 
 ###################
 ## History Frame ##
@@ -333,6 +357,7 @@ tab_users_frame.grid()
 metric_frame = ctk.CTkFrame(app)
 metric_frame.pack(fill="both", pady=5)
 metric_frame.grid_columnconfigure(0, weight=1)
+
 
 
 
