@@ -219,7 +219,7 @@ def on_add_button_click():
 def delete_btn_click(crazy_name):
     # Ruft einen Dialog auf welcher das Löschen verifiziert
     if messagebox.askyesno(message=f'{crazy_name} asks: Do you really '
-                                           f'wanna hurt me?'):
+                                           f'want to hurt me?'):
         # Ruft den Pfad auf, löscht die JSON-Datei, löscht alle Button und
         # führt das init-Rendering neu aus.
         del_path = f"./config/user_data/{crazy_name}"
@@ -230,10 +230,10 @@ def delete_btn_click(crazy_name):
 
 # create log string with time and details, save & render it
 def add_to_history(new_history_entry):
-    # get time
-    now = datetime.datetime.now()
+    # get time and format hour:minute:second
+    now = datetime.datetime.now().strftime("%H:%M:%S")
     # make a format string
-    converted_entry = f"{now.hour}:{now.minute}:{now.second} {str(new_history_entry)} +10 Pts. \n"
+    converted_entry = f"{now} | {str(new_history_entry)} +10 Pts. \n"
     # fill log list
     session_history.append(converted_entry)
     # start render of labels
@@ -253,7 +253,7 @@ def render_history_labels(label_text):
 def on_closing():
     now = datetime.datetime.now()
     if messagebox.askokcancel("Quit", "Do you want to quit?"):
-        with open(f"history/log/{current_classlist['title']}__{now.year}_{now.month}_{now.day}_{now.hour}.txt", "w") as writer:
+        with open(f"history/log/{current_classlist['title']}__{now.year}_{now.month}_{now.day}_{now.minute}_{now.second}.txt", "w") as writer:
             writer.writelines(session_history)
         app.destroy()
 
