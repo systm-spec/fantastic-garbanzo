@@ -174,9 +174,6 @@ def on_user_click(current_user):
     # Save the action to the history
     add_to_history(current_user)
 
-    # Gibt den aktualisierten Benutzerstatus in der Konsole aus (zur Kontrolle)
-    # print(user[current_user])
-
 
 def render_json_classlists():
     """
@@ -205,15 +202,12 @@ def on_add_button_click():
     user_download_dir = os.path.join(os.path.expanduser("~"), "Downloads")
     # Auswählen der einzulesenden Textdatei
     file_path = fd.askopenfilename(initialdir=user_download_dir, filetypes=filetypes)
-    print(file_path)
     # Extrahieren des Dateinamens
     file_name = file_path.split("/")[-1].split(".")[0]
-    print(file_name)
     # Einlesen der Txt-Datei
     with open(file_path, "r", encoding="utf-8") as read_file:
         file = read_file.read().split("\n")
-        print(type(file))
-        print(file)
+        file.sort()
     # Aufrufen der Funktion zum Transferieren in eine JSON-Datei
     create_save_json(file, file_name)
     # Erstellte JSON_Datei rendern
@@ -270,10 +264,8 @@ def destroy_anyway(e):
 def do_random():
     r = random.randint(1,10)
     scores =current_classlist_dict[current_classlist["title"]].items()
-    print("01",scores)
     b = [{'score': b['score'], 'name':b["name"]} for a,b in scores]
     low_count = [x["name"] for x in filter(lambda a: a["score"]<30, b)]
-    print(low_count)
     rnd_user = random.choice(low_count)
     messagebox.showinfo(title="RNG", message=f"Folgender Studi lurkt sehr "
                                              f"gern:\n 🕵🏼 {rnd_user} 🕵🏼 ")
